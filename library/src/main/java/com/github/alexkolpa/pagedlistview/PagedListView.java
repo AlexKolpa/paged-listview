@@ -1,4 +1,4 @@
-package com.alexkolpa.pagedlistview;
+package com.github.alexkolpa.pagedlistview;
 
 import static android.view.ViewGroup.LayoutParams.*;
 

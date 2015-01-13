@@ -1,4 +1,4 @@
-package com.alexkolpa.pagedlistview.sample;
+package com.github.alexkolpa.pagedlistview.sample;
 
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import com.alexkolpa.pagedlistview.PagedListView;
+import com.github.alexkolpa.pagedlistview.PagedListView;
 
 
 public class MainActivity extends ActionBarActivity {

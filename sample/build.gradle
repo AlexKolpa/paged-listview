@@ -1,23 +1,11 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.14.2'
-    }
-}
 apply plugin: 'com.android.application'
-
-repositories {
-    jcenter()
-}
 
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.alexkolpa.pagedlistview.sample"
+        applicationId "com.github.alexkolpa.pagedlistview.sample"
         minSdkVersion 9
         targetSdkVersion 21
         versionCode 1
