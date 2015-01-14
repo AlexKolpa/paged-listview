@@ -1,6 +1,7 @@
 package com.github.alexkolpa.pagedlistview;
 
-import static android.view.ViewGroup.LayoutParams.*;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -21,6 +22,7 @@ public class PagedListView extends ListView {
 		boolean hasMoreItems();
 	}
 
+	private boolean mFooterContained = false;
 	private boolean mIsLoading;
 	private Pageable mPageable;
 	private View mLoadingView;
@@ -62,9 +64,15 @@ public class PagedListView extends ListView {
 	private void loadAttributes(AttributeSet attributeSet) {
 		TypedArray typedArray = getContext().obtainStyledAttributes(attributeSet, R.styleable.PagedListView);
 		int loadingViewId = typedArray.getResourceId(R.styleable.PagedListView_plv_loadingView, R.layout.default_loading_view);
-		mLoadingView = LayoutInflater.from(getContext()).inflate(loadingViewId, mFooterView, false);
+		typedArray.recycle();
+
+		setLoadingView(loadingViewId);
 	}
 
+	/**
+	 * Set Pageable behind this PagedListView
+	 * @param pageable the Pageable that handles the loading of new data
+	 */
 	public void setPageable(Pageable pageable) {
 		mPageable = pageable;
 	}
@@ -73,29 +81,70 @@ public class PagedListView extends ListView {
 		return mIsLoading;
 	}
 
+	/**
+	 * Set the loading state of the View
+	 * @param loading whether the view is currently loading
+	 */
 	public void setLoading(boolean loading) {
 		mIsLoading = loading;
 
-		if(mIsLoading && mFooterView.indexOfChild(mLoadingView) == -1) {
-			mFooterView.addView(mLoadingView);
-		}
-		else if(!mIsLoading) {
-			mFooterView.removeView(mLoadingView);
-		}
+		checkAndToggleLoadingVisibility();
 	}
 
+	/**
+	 * Inflates and adds a new loading view into the list's footer
+	 * @param loadingViewId resource id of view to be inflated
+	 */
 	public void setLoadingView(int loadingViewId) {
 		View loadingView = LayoutInflater.from(getContext()).inflate(loadingViewId, mFooterView, false);
-		setLoadingView(loadingView);
+		setLoadingView(loadingView, true);
 	}
 
-	public void setLoadingView(View loadingView) {
+	/**
+	 * Set a new view as the loading view
+	 * @param loadingView the view to be used to indicate a loading list
+	 * @param addToFooter Whether the view should be added to the footer
+	 */
+	public void setLoadingView(View loadingView, boolean addToFooter) {
 		if(mFooterView.indexOfChild(mLoadingView) != -1) {
 			mFooterView.removeView(mLoadingView);
+		}
+
+		if(addToFooter && loadingView != null) {
 			mFooterView.addView(loadingView);
 		}
 
+		mFooterContained = addToFooter;
+
 		mLoadingView = loadingView;
+
+		checkAndToggleLoadingVisibility();
+	}
+
+	private void checkAndToggleLoadingVisibility() {
+		if(mLoadingView != null) {
+			if(mFooterContained) {
+				//Due to a layout issue with views inside a ListView, setting visibility to GONE behaves the same as
+				// INVISIBLE, which is not what we want. So we actively remove the view from the footer view.
+				if(mIsLoading) {
+					mFooterView.addView(mLoadingView);
+				}
+				else {
+					mFooterView.removeView(mLoadingView);
+				}
+			}
+			else {
+				mLoadingView.setVisibility(mIsLoading? VISIBLE : GONE);
+			}
+		}
+	}
+
+	/**
+	 * Sets the new loading view in the footer
+	 * @param loadingView view to be shown on loading
+	 */
+	public void setLoadingView(View loadingView) {
+		setLoadingView(loadingView, true);
 	}
 
 	@Override
@@ -133,14 +182,14 @@ public class PagedListView extends ListView {
 
 				mPreviousTotal = totalItemCount;
 
-				mFooterView.removeView(mLoadingView);
+				checkAndToggleLoadingVisibility();
 			}
 
 			if(mPageable != null && mPageable.hasMoreItems() && !mIsLoading &&
 					((firstVisibleItem + visibleItemCount) > totalItemCount - 1)) {
 				mIsLoading = true;
 
-				mFooterView.addView(mLoadingView);
+				checkAndToggleLoadingVisibility();
 
 				mPageable.onLoadMoreItems();
 			}
