@@ -4,4 +4,12 @@
     <string name="app_name">PagedListView</string>
     <string name="refresh">Refresh</string>
 
+    <string name="activity_footer">Footer loading view</string>
+    <string name="activity_custom">Custom loading view</string>
+
+    <string-array name="activity_names">
+        <item>@string/activity_footer</item>
+        <item>@string/activity_custom</item>
+    </string-array>
+
 </resources>

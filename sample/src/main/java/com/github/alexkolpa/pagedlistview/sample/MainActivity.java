@@ -1,83 +1,45 @@
 package com.github.alexkolpa.pagedlistview.sample;
 
-import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import com.github.alexkolpa.pagedlistview.PagedListView;
+import android.widget.ListView;
 
 
-public class MainActivity extends ActionBarActivity {
-
-	private ArrayAdapter<String> mAdapter;
-	private MyPageable mPageable;
-
-	private Handler mHandler;
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-		mPageable = new MyPageable();
+		String[] names = getResources().getStringArray(R.array.activity_names);
 
-		mHandler = new Handler();
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
 
-		PagedListView listView = (PagedListView)findViewById(R.id.paged_listview);
-		listView.setPageable(mPageable);
-		listView.setAdapter(mAdapter);
+		ListView listView = (ListView)findViewById(R.id.activity_list);
+		listView.setAdapter(adapter);
+		listView.setOnItemClickListener(this);
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if(item.getItemId() == R.id.refresh) {
-			mAdapter.clear();
-			mPageable.resetPage();
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Class intentClazz;
+		switch (position) {
+			case 0:
+				intentClazz = FooterActivity.class;
+				break;
+			case 1:
+				intentClazz = CustomActivity.class;
+				break;
+			default:
+				throw new IllegalArgumentException("Incorrect position!");
 		}
 
-		return super.onOptionsItemSelected(item);
-	}
-
-	private class MyPageable implements PagedListView.Pageable {
-
-		private static final long DELAY = 500L; //ms
-		private static final int MAX_PAGE_COUNT = 3;
-		private static final int BATCH_SIZE = 20;
-		private int mPage = 0;
-
-		@Override
-		public void onLoadMoreItems() {
-			mHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					for(int i = 0; i < BATCH_SIZE; i++) {
-						mAdapter.add("Item " + (mPage * BATCH_SIZE + i + 1));
-					}
-
-					mPage++;
-
-					Log.d("MyPageable", "Batch for page " + mPage + " added");
-				}
-			}, DELAY);
-		}
-
-		@Override
-		public boolean hasMoreItems() {
-			return mPage < MAX_PAGE_COUNT;
-		}
-
-		public void resetPage() {
-			mPage = 0;
-		}
+		Intent intent = new Intent(this, intentClazz);
+		startActivity(intent);
 	}
 }
