@@ -1,9 +1,10 @@
 package com.github.alexkolpa.pagedlistview.sample;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Handler;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import com.github.alexkolpa.pagedlistview.PagedListView;
 
 class MyPageable implements PagedListView.Pageable {
@@ -14,10 +15,10 @@ class MyPageable implements PagedListView.Pageable {
 
 	private final Handler mHandler = new Handler();
 
-	private ArrayAdapter<String> mAdapter;
+	private MultiTypeAdapter mAdapter;
 	private int mPage = 0;
 
-	public MyPageable(ArrayAdapter<String> adapter) {
+	public MyPageable(MultiTypeAdapter adapter) {
 		this.mAdapter = adapter;
 	}
 
@@ -26,9 +27,12 @@ class MyPageable implements PagedListView.Pageable {
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
+				List<String> newItems = new ArrayList<>(BATCH_SIZE);
 				for(int i = 0; i < BATCH_SIZE; i++) {
-					mAdapter.add("Item " + (mPage * BATCH_SIZE + i + 1));
+					newItems.add("Item " + (mPage * BATCH_SIZE + i + 1));
 				}
+
+				mAdapter.addAll(newItems);
 
 				mPage++;
 

@@ -3,17 +3,16 @@ package com.github.alexkolpa.pagedlistview.sample;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import com.github.alexkolpa.pagedlistview.PagedListView;
 
 public class AbstractPagedActivity extends ActionBarActivity {
 
 	protected MyPageable mPageable;
 	protected PagedListView mListView;
-	protected ArrayAdapter<String> mAdapter;
+	protected MultiTypeAdapter mAdapter;
 
 	protected void loadListView() {
-		mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+		mAdapter = new MultiTypeAdapter();
 
 		mPageable = new MyPageable(mAdapter);
 
