@@ -126,7 +126,7 @@ public class PagedListView extends ListView {
 			if(mFooterContained) {
 				//Due to a layout issue with views inside a ListView, setting visibility to GONE behaves the same as
 				// INVISIBLE, which is not what we want. So we actively remove the view from the footer view.
-				if(mIsLoading) {
+				if(mIsLoading && mFooterView.indexOfChild(mLoadingView) == -1) {
 					mFooterView.addView(mLoadingView);
 				}
 				else {
